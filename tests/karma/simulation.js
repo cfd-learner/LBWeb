@@ -32,6 +32,29 @@ describe("simulation.js", function() {
                 }
             }
         });
+
+        it("cell surrounded in obstacles", function() {
+            this.prev_cells.get_cell(1, 1)[0] = 9/4;
+            this.prev_cells.get_cell(1, 1)[1] = 1;
+            this.prev_cells.get_cell(1, 1)[2] = 1;
+            this.prev_cells.get_cell(1, 1)[3] = 1;
+            this.prev_cells.get_cell(1, 1)[4] = 1;
+            this.prev_cells.get_cell(1, 1)[5] = 1;
+            this.prev_cells.get_cell(1, 1)[6] = 1;
+            this.prev_cells.get_cell(1, 1)[7] = 1;
+            this.prev_cells.get_cell(1, 1)[8] = 1;
+            this.problem.is_obstacle = function(x, y) {
+                return x != 1 || y != 1;
+            }
+            this.accel = new StepStorage(this.problem);
+            timestep(this.problem, this.prev_cells, this.accel,
+                    this.next_cells);
+            timestep(this.problem, this.next_cells, this.accel,
+                    this.prev_cells);
+
+            expect(this.prev_cells.get_cell(1, 1)).
+                    toEqual([4, 1, 1, 1, 1, 1/4, 1/4, 1/4, 1/4])
+        });
     });
 
     describe("accelerate_cell", function() {
