@@ -156,6 +156,29 @@ describe("storage.js", function() {
             expect(step.get_cell( 4,  4)).toEqual([0, 0, 0, 0, 0]);
         });
 
+
+        it('get_cell returns edge_value when VALUE and outside bounds', 
+                function() {
+            var test_value = [0, 1, 2, 3, 4];
+            this.problem = new ProblemDefinition([3, 3], null, 
+                    ProblemDefinition.EDGE_TYPE.VALUE, test_value);
+            var step = new StepStorage(this.problem, [1, 1, 1, 1, 1]);
+            expect(step.get_cell(-1,  0)).toEqual(test_value);
+            expect(step.get_cell( 0, -1)).toEqual(test_value);
+            expect(step.get_cell(-1, -1)).toEqual(test_value);
+            expect(step.get_cell(-1,  4)).toEqual(test_value);
+            expect(step.get_cell( 4, -1)).toEqual(test_value);
+            expect(step.get_cell( 4,  4)).toEqual(test_value);
+        });
+
+        it('get_cell returns clones and not the original when outside bounds',
+                function() {
+            this.problem = new ProblemDefinition([3, 3], null, 
+                    ProblemDefinition.EDGE_TYPE.ZERO);
+            var step = new StepStorage(this.problem, [1, 1, 1, 1, 1]);
+            expect(step.get_cell(-1,  0)).not.toBe(step.get_cell(0, -1));
+        });
+
         it('clone correct', function() {
             var step = new StepStorage(this.problem);
             var new_step = step.clone();

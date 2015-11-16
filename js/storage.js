@@ -80,7 +80,7 @@ function StepStorage(problem, initial_value) {
 
 StepStorage.prototype.get_cell = function() {
     var id = this.problem.get_cell_id.apply(this.problem, arguments);
-    if(id == -1) return this.problem.edges_value;
+    if(id == -1) return this.problem.edges_value.slice();
     return this.storage[id];
 }
 
