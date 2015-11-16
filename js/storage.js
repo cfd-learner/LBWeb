@@ -1,9 +1,12 @@
 
-function ProblemDefinition(size, speeds, edges, edges_value) {
+function ProblemDefinition(size, speeds, omega, edges, edges_value) {
     this.size = size;
     if(speeds) {
         this.speeds = speeds;
     } else this.speeds = 1 + 2 * size.length;
+    if(omega) {
+        this.omega = omega;
+    } else this.omega = 1;
 
     if(edges !== undefined) {
         this.edges = edges;
@@ -34,7 +37,7 @@ ProblemDefinition.prototype.get_cell_id = function() {
     var id = 0;
     for(var i = 0; i < arguments.length; i++) {
         id *= this.size[i];
-        if(arguments[i] > this.size[i] || arguments[i] < 0) {
+        if(arguments[i] >= this.size[i] || arguments[i] < 0) {
             switch(this.edges) {
                 case ProblemDefinition.EDGE_TYPE.WRAP:
                     id += ((arguments[i] % this.size[i]) + this.size[i]) % 
@@ -49,6 +52,14 @@ ProblemDefinition.prototype.get_cell_id = function() {
         }
     }
     return id;
+}
+
+/*
+ * Place holder function, to be overridden with a function that correctly 
+ * determines the nature of the cell.
+ */
+ProblemDefinition.prototype.is_obstacle = function() {
+    return false;
 }
 
 function StepStorage(problem, initial_value) {
@@ -90,4 +101,11 @@ StepStorage.prototype.clone = function() {
         new_step.storage[i] = this.storage[i].slice();
     }
     return new_step;
+}
+
+StepStorage.prototype.add = function(other) {
+    if(other.problem != this.problem) throw "Can only add for same problem.";
+    this.storage.map(function(value, index) {
+        return value + other.storage[index];
+    });
 }

@@ -16,7 +16,7 @@ describe("storage.js", function() {
         });
 
         it('get_cell_id WRAP is correct', function() {
-            var problem = new ProblemDefinition([3, 5], null, 
+            var problem = new ProblemDefinition([3, 5], null, null,
                     ProblemDefinition.EDGE_TYPE.WRAP);
             expect(problem.get_cell_id(0, -1)).toBe(4);
             expect(problem.get_cell_id(0, 7)).toBe(2);
@@ -26,7 +26,7 @@ describe("storage.js", function() {
         });
 
         it('get_cell_id ZERO is correct', function() {
-            var problem = new ProblemDefinition([3, 5], null, 
+            var problem = new ProblemDefinition([3, 5], null, null,
                     ProblemDefinition.EDGE_TYPE.ZERO);
             expect(problem.get_cell_id(0, -1)).toBe(-1);
             expect(problem.get_cell_id(0, 7)).toBe(-1);
@@ -36,7 +36,7 @@ describe("storage.js", function() {
         });
 
         it('get_cell_id VALUE is correct', function() {
-            var problem = new ProblemDefinition([3, 5], null, 
+            var problem = new ProblemDefinition([3, 5], null, null,
                     ProblemDefinition.EDGE_TYPE.VALUE);
             expect(problem.get_cell_id(0, -1)).toBe(-1);
             expect(problem.get_cell_id(0, 7)).toBe(-1);
@@ -145,35 +145,35 @@ describe("storage.js", function() {
         });
 
         it('get_cell returns zero when ZERO and outside bounds', function() {
-            this.problem = new ProblemDefinition([3, 3], null, 
+            this.problem = new ProblemDefinition([3, 3], null, null,
                     ProblemDefinition.EDGE_TYPE.ZERO);
             var step = new StepStorage(this.problem, [1, 1, 1, 1, 1]);
             expect(step.get_cell(-1,  0)).toEqual([0, 0, 0, 0, 0]);
             expect(step.get_cell( 0, -1)).toEqual([0, 0, 0, 0, 0]);
             expect(step.get_cell(-1, -1)).toEqual([0, 0, 0, 0, 0]);
-            expect(step.get_cell(-1,  4)).toEqual([0, 0, 0, 0, 0]);
-            expect(step.get_cell( 4, -1)).toEqual([0, 0, 0, 0, 0]);
-            expect(step.get_cell( 4,  4)).toEqual([0, 0, 0, 0, 0]);
+            expect(step.get_cell(-1,  3)).toEqual([0, 0, 0, 0, 0]);
+            expect(step.get_cell( 3, -1)).toEqual([0, 0, 0, 0, 0]);
+            expect(step.get_cell( 3,  3)).toEqual([0, 0, 0, 0, 0]);
         });
 
 
         it('get_cell returns edge_value when VALUE and outside bounds', 
                 function() {
             var test_value = [0, 1, 2, 3, 4];
-            this.problem = new ProblemDefinition([3, 3], null, 
+            this.problem = new ProblemDefinition([3, 3], null, null,
                     ProblemDefinition.EDGE_TYPE.VALUE, test_value);
             var step = new StepStorage(this.problem, [1, 1, 1, 1, 1]);
             expect(step.get_cell(-1,  0)).toEqual(test_value);
             expect(step.get_cell( 0, -1)).toEqual(test_value);
             expect(step.get_cell(-1, -1)).toEqual(test_value);
-            expect(step.get_cell(-1,  4)).toEqual(test_value);
-            expect(step.get_cell( 4, -1)).toEqual(test_value);
-            expect(step.get_cell( 4,  4)).toEqual(test_value);
+            expect(step.get_cell(-1,  3)).toEqual(test_value);
+            expect(step.get_cell( 3, -1)).toEqual(test_value);
+            expect(step.get_cell( 3,  3)).toEqual(test_value);
         });
 
         it('get_cell returns clones and not the original when outside bounds',
                 function() {
-            this.problem = new ProblemDefinition([3, 3], null, 
+            this.problem = new ProblemDefinition([3, 3], null, null,
                     ProblemDefinition.EDGE_TYPE.ZERO);
             var step = new StepStorage(this.problem, [1, 1, 1, 1, 1]);
             expect(step.get_cell(-1,  0)).not.toBe(step.get_cell(0, -1));
