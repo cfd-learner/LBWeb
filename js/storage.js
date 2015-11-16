@@ -1,13 +1,54 @@
 
-function ProblemDefinition(size, speeds) {
+function ProblemDefinition(size, speeds, edges, edges_value) {
     this.size = size;
     if(speeds) {
         this.speeds = speeds;
     } else this.speeds = 1 + 2 * size.length;
+
+    if(edges !== undefined) {
+        this.edges = edges;
+        if(edges_value) {
+            this.edges_value = edges_value;
+        } else {
+            this.edges_value = Array.apply(null, 
+                    new Array(this.speeds)).map(function(){return 0;});
+        }
+    } else {
+        this.edges = ProblemDefinition.EDGE_TYPE.WRAP;
+    }
+
 }
+
+ProblemDefinition.EDGE_TYPE = Object.freeze({
+    WRAP: 0,
+    ZERO: 1,
+    VALUE: 2,
+});
 
 ProblemDefinition.prototype.get_cell_count = function() {
     return this.size.reduce(function(a,b) {return a * b}, 1);
+}
+
+ProblemDefinition.prototype.get_cell_id = function() {
+    if(arguments.length != this.size.length) throw "Invalid dimensions";
+    var id = 0;
+    for(var i = 0; i < arguments.length; i++) {
+        id *= this.size[i];
+        if(arguments[i] > this.size[i] || arguments[i] < 0) {
+            switch(this.edges) {
+                case ProblemDefinition.EDGE_TYPE.WRAP:
+                    id += ((arguments[i] % this.size[i]) + this.size[i]) % 
+                            this.size[i];
+                    break;
+                case ProblemDefinition.EDGE_TYPE.ZERO:
+                case ProblemDefinition.EDGE_TYPE.VALUE:
+                    return -1;
+            }
+        } else {
+            id += arguments[i];
+        }
+    }
+    return id;
 }
 
 function StepStorage(problem, initial_value) {
@@ -38,12 +79,8 @@ function StepStorage(problem, initial_value) {
 }
 
 StepStorage.prototype.get_cell = function() {
-    if(arguments.length != this.problem.size.length) throw "Invalid dimensions";
-    var id = 0;
-    for(var i = 0; i < arguments.length; i++) {
-        id *= this.problem.size[i];
-        id += arguments[i];
-    }
+    var id = this.problem.get_cell_id.apply(this.problem, arguments);
+    if(id == -1) return this.problem.edges_value;
     return this.storage[id];
 }
 
