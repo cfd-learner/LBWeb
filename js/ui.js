@@ -73,7 +73,7 @@ LBUI = (function() {
         if(sim_helper) {
             mouse_pos.x = sim_helper.size[0] * browser_x / c_tl.width;
             mouse_pos.y = sim_helper.size[1] * browser_y / c_tl.height;
-            quad = (mouse_pos.x > sim_helper.size[0]/2) + 
+            quad = (mouse_pos.x > sim_helper.size[0]/2) +
                     2 * (mouse_pos.y > sim_helper.size[1]/2);
             if(mouse_pos.quadrant != -1 && quad != mouse_pos.quadrant) {
                 redraw_cells();
@@ -125,7 +125,7 @@ LBUI = (function() {
         var quad;
         for(var y = 0; y < sim_helper.size[1]; y++) {
             for(var x = 0; x < sim_helper.size[0]; x ++) {
-                quad = (x > sim_helper.size[0]/2) + 
+                quad = (x > sim_helper.size[0]/2) +
                         2 * (y > sim_helper.size[1]/2);
                 if(3 - mouse_pos.quadrant == quad) continue;
                 if(sim_helper.is_obstacle(x, y)) {
@@ -227,6 +227,6 @@ LBUI = (function() {
 
 })();
 
+LBUI.set_sim_helper_class(JSSimHelper);
 //LBUI.set_sim_helper_class(createRemoteSimHelper("http://meiamso.me:9001/"))
-//LBUI.set_sim_helper_class(createRemoteSimHelper("http://192.168.0.169:8081/"))
-LBUI.set_sim_helper_class(createRemoteSimHelper("http://localhost:8081/"))
+//LBUI.set_sim_helper_class(createRemoteSimHelper("http://localhost:8081/"))
