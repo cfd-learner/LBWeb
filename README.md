@@ -4,6 +4,8 @@ This is a simple implementation of the Lattice-Boltzmann CFD  in JavaScript for 
 
 Simply open index.html in browser to use.
 
+Available on github: http://meiamsome.github.io/LBWeb/
+
 ## Running with browser-based simulation
 
 To use browser-based simulation use the developer tools to run:
