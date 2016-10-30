@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="js/storage.js"></script>
+        <script src="js/simulation.js"></script>
+        <script src="js/simulation_helper.js"></script>
+        <script src="js/ui.js"></script>
+        <script>
+        window.addEventListener('load', function() {
+            LBUI.set_canvas_element(document.getElementById('canvas'));
+        });
+        </script>
+    </head>
+    <body>
+        <div style="text-align: center; height: 600px; resize: vertical; overflow: hidden;">
+            <canvas width="0" id="canvas" style="max-width: 100%; max-height:100%; width:auto; height:auto;"></canvas>
+        </div>
+        <input onchange="LBUI.problem_file_change.call(this)" type="file">
+    </body>
+</html>

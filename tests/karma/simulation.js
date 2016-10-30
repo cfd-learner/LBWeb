@@ -5,58 +5,6 @@ describe("simulation.js", function() {
         this.next_cells = new StepStorage(this.problem);
     });
 
-    describe("timestep", function() {
-        it("one step", function() {
-            this.prev_cells.get_cell(0, 0)[5] = 1;
-            this.prev_cells.get_cell(1, 0)[2] = 1;
-            this.prev_cells.get_cell(2, 0)[6] = 1;
-
-            this.prev_cells.get_cell(0, 1)[1] = 1;
-            this.prev_cells.get_cell(1, 1)[0] = 1;
-            this.prev_cells.get_cell(2, 1)[3] = 1;
-
-            this.prev_cells.get_cell(0, 2)[8] = 1;
-            this.prev_cells.get_cell(1, 2)[4] = 1;
-            this.prev_cells.get_cell(2, 2)[7] = 1;
-            timestep(this.problem, this.prev_cells, this.next_cells,
-                    this.next_cells);
-
-            expect(this.next_cells.get_cell(1, 1)).
-                    toEqual([4, 1, 1, 1, 1, 1/4, 1/4, 1/4, 1/4])
-
-            for(var x = 0; x < 3; x ++) {
-                for(var y = 0; y < 3; y++) {
-                    if(x != 1 || y != 1) expect(this.next_cells.get_cell(x, y)).
-                            toEqual([NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 
-                                    NaN]);
-                }
-            }
-        });
-
-        it("cell surrounded in obstacles", function() {
-            this.prev_cells.get_cell(1, 1)[0] = 9/4;
-            this.prev_cells.get_cell(1, 1)[1] = 1;
-            this.prev_cells.get_cell(1, 1)[2] = 1;
-            this.prev_cells.get_cell(1, 1)[3] = 1;
-            this.prev_cells.get_cell(1, 1)[4] = 1;
-            this.prev_cells.get_cell(1, 1)[5] = 1;
-            this.prev_cells.get_cell(1, 1)[6] = 1;
-            this.prev_cells.get_cell(1, 1)[7] = 1;
-            this.prev_cells.get_cell(1, 1)[8] = 1;
-            this.problem.is_obstacle = function(x, y) {
-                return x != 1 || y != 1;
-            }
-            this.accel = new StepStorage(this.problem);
-            timestep(this.problem, this.prev_cells, this.accel,
-                    this.next_cells);
-            timestep(this.problem, this.next_cells, this.accel,
-                    this.prev_cells);
-
-            expect(this.prev_cells.get_cell(1, 1)).
-                    toEqual([4, 1, 1, 1, 1, 1/4, 1/4, 1/4, 1/4])
-        });
-    });
-
     describe("accelerate_cell", function() {
         it("single", function() {
             this.prev_cells.get_cell(0, 0)[1] = 2;
@@ -241,4 +189,78 @@ describe("simulation.js", function() {
                     toEqual([4, 1, 1, 1, 1, 1/4, 1/4, 1/4, 1/4])
         })
     });
+
+    describe("av_vels", function() {
+        it('test normal cell', function() {
+            this.prev_cells.storage[0] = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+            expect(av_vel(this.problem, this.prev_cells, [0, 0])).toBe(0);
+        });
+
+        it('test x only', function() {
+            this.prev_cells.storage[0] = [0, 1, 0, 0, 0, 0, 0, 0, 0];
+            expect(av_vel(this.problem, this.prev_cells, [0, 0])).toBe(1);
+        });
+        it('test y only', function() {
+            this.prev_cells.storage[0] = [0, 0, 1, 0, 0, 0, 0, 0, 0];
+            expect(av_vel(this.problem, this.prev_cells, [0, 0])).toBe(1);
+        });
+        it('test x & y', function() {
+            this.prev_cells.storage[0] = [0, 1, 1, 0, 0, 0, 0, 0, 0];
+            expect(av_vel(this.problem, this.prev_cells, [0, 0])).
+                    toBeCloseTo(1/Math.sqrt(2), 4);
+        });
+    });
+
+    describe("timestep", function() {
+        it("one step", function() {
+            this.prev_cells.get_cell(0, 0)[5] = 1;
+            this.prev_cells.get_cell(1, 0)[2] = 1;
+            this.prev_cells.get_cell(2, 0)[6] = 1;
+
+            this.prev_cells.get_cell(0, 1)[1] = 1;
+            this.prev_cells.get_cell(1, 1)[0] = 1;
+            this.prev_cells.get_cell(2, 1)[3] = 1;
+
+            this.prev_cells.get_cell(0, 2)[8] = 1;
+            this.prev_cells.get_cell(1, 2)[4] = 1;
+            this.prev_cells.get_cell(2, 2)[7] = 1;
+            timestep(this.problem, this.prev_cells, this.next_cells,
+                    this.next_cells);
+
+            expect(this.next_cells.get_cell(1, 1)).
+                    toEqual([4, 1, 1, 1, 1, 1/4, 1/4, 1/4, 1/4])
+
+            for(var x = 0; x < 3; x ++) {
+                for(var y = 0; y < 3; y++) {
+                    if(x != 1 || y != 1) expect(this.next_cells.get_cell(x, y)).
+                            toEqual([NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 
+                                    NaN]);
+                }
+            }
+        });
+
+        it("cell surrounded in obstacles", function() {
+            this.prev_cells.get_cell(1, 1)[0] = 9/4;
+            this.prev_cells.get_cell(1, 1)[1] = 1;
+            this.prev_cells.get_cell(1, 1)[2] = 1;
+            this.prev_cells.get_cell(1, 1)[3] = 1;
+            this.prev_cells.get_cell(1, 1)[4] = 1;
+            this.prev_cells.get_cell(1, 1)[5] = 1;
+            this.prev_cells.get_cell(1, 1)[6] = 1;
+            this.prev_cells.get_cell(1, 1)[7] = 1;
+            this.prev_cells.get_cell(1, 1)[8] = 1;
+            this.problem.is_obstacle = function(coords) {
+                return coords[0] != 1 || coords[1] != 1;
+            }
+            this.accel = new StepStorage(this.problem);
+            timestep(this.problem, this.prev_cells, this.accel,
+                    this.next_cells);
+            timestep(this.problem, this.next_cells, this.accel,
+                    this.prev_cells);
+
+            expect(this.prev_cells.get_cell(1, 1)).
+                    toEqual([4, 1, 1, 1, 1, 1/4, 1/4, 1/4, 1/4])
+        });
+    });
+
 });

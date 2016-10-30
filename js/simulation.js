@@ -29,11 +29,12 @@ function timestep(problem, old_state, accel_state, new_state) {
 function accelerate_cell(problem, old_state, accel_state, new_state,
         cell_coords) {
     var x = cell_coords[0],
-        y = cell_coords[1];
+        y = cell_coords[1],
+        accel = accel_state.get_cell(x, y);
+    if(problem.is_obstacle(x, y)) accel = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     for(var i = 0; i < 9; i += 1) {
-        new_state.get_cell(x, y)[i] = old_state.get_cell(x, y)[i] + 
-                accel_state.get_cell(x, y)[i];
+        new_state.get_cell(x, y)[i] = old_state.get_cell(x, y)[i] + accel[i];
     }
 
 }
@@ -141,4 +142,24 @@ function collision_cell(problem, old_state, new_state, cell_coords) {
     {
         to[i] = (from[i] + problem.omega * (d_equ[i] - from[i]));
     }
+}
+
+function av_vel(problem, state, cell_coords) {
+    var x = cell_coords[0],
+        y = cell_coords[1],
+        from = state.get_cell(x, y),
+        local_density,
+        u_x,
+        u_y;
+
+    local_density = from.reduce(function(a, b) {
+        return a + b;
+    });
+
+    u_x = (from[1] + from[5] + from[8] - (from[3] + from[6] + from[7])) / 
+            local_density;
+    u_y = (from[2] + from[5] + from[6] - (from[4] + from[7] + from[8])) / 
+            local_density;
+
+    return Math.sqrt(u_x * u_x + u_y * u_y);
 }
